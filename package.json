@@ -1,0 +1,27 @@
+{
+  "name": "openmusicapiversi1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1",
+    "nodemon": "^3.0.3"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^21.3.2",
+    "auto-bind": "^4.0.0",
+    "dotenv": "^16.4.1",
+    "joi": "^17.12.0",
+    "nanoid": "^5.0.4",
+    "node-pg-migrate": "^6.2.2",
+    "pg": "^8.11.3"
+  }
+}
