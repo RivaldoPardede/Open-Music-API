@@ -1,6 +1,4 @@
 /* eslint-disable arrow-parens */
-/* eslint-disable camelcase */
-
 exports.shorthands = undefined;
 
 exports.up = pgm => {
@@ -27,11 +25,9 @@ exports.up = pgm => {
     },
     duration: {
       type: 'INTEGER',
-      notNull: true,
     },
-    albumId: {
-      type: 'VARCHAR(50)',
-      notNull: true,
+    album_id: {
+      type: 'TEXT',
     },
   });
 };

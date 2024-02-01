@@ -53,19 +53,19 @@ class SongsHandler {
     };
   }
 
-  putNoteByIdHandler(request) {
+  async putSongByIdHandler(request) {
     this._validator.validateSongPayload(request.payload);
     const { id } = request.params;
-    this._service.editSongByIdHandler(id, request.payload);
+    await this._service.editSongById(id, request.payload);
     return {
       status: 'success',
       message: 'Lagu berhasil diperbaharui',
     };
   }
 
-  deleteSongByIdHandler(request) {
+  async deleteSongByIdHandler(request) {
     const { id } = request.params;
-    this._service.deleteSongById(id);
+    await this._service.deleteSongById(id);
     return {
       status: 'success',
       message: 'Lagu berhasil dihapus',
