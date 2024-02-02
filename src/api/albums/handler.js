@@ -29,9 +29,35 @@ class AlbumsHandler {
 
   async getAlbumByIdHandler(request) {
     const { id } = request.params;
-    const album = await this._service.getAlbumById(id);
+    const result = await this._service.getAlbumById(id);
+    if (!result.rows[0].song_id) {
+      const album = {
+        id: result.rows[0].album_id,
+        name: result.rows[0].name,
+        year: result.rows[0].year,
+        songs: [],
+      };
+      return {
+        status: 'success',
+        message: 'Album berdasarkan id berhasil didapatkan',
+        data: {
+          album,
+        },
+      };
+    }
+    const album = {
+      id: result.rows[0].album_id,
+      name: result.rows[0].name,
+      year: result.rows[0].year,
+      songs: result.rows.map((songs) => ({
+        id: songs.song_id,
+        title: songs.title,
+        performer: songs.performer,
+      })),
+    };
     return {
       status: 'success',
+      message: 'Detail album berdasarkan id berhasil didapatkan',
       data: {
         album,
       },
@@ -40,8 +66,9 @@ class AlbumsHandler {
 
   async putAlbumByIdHandler(request) {
     this._validator.validateAlbumPayload(request.payload);
+    const { name, year } = request.payload;
     const { id } = request.params;
-    await this._service.editAlbumById(id, request.payload);
+    await this._service.editAlbumById(id, { name, year });
     return {
       status: 'success',
       message: 'Album berhasil diperbaharui',

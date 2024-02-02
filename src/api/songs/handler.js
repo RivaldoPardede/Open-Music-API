@@ -32,10 +32,59 @@ class SongsHandler {
     return response;
   }
 
-  async getSongsHandler() {
+  async getSongsHandler(request) {
+    const { title, performer } = request.query;
+
+    if (title && performer) {
+      const songs = await this._service.getSongByTitleOrPerformer(title, performer);
+      const result = songs.map((song) => ({
+        id: song.id,
+        title: song.title,
+        performer: song.performer,
+      }));
+      return {
+        status: 'success',
+        message: 'Seluruh Lagu berdasarkan title dan performer berhasil didapatkan',
+        data: {
+          songs: result,
+        },
+      };
+    }
+    if (title) {
+      const songs = await this._service.getSongByTitle(title);
+      const result = songs.map((song) => ({
+        id: song.id,
+        title: song.title,
+        performer: song.performer,
+      }));
+      return {
+        status: 'success',
+        message: 'Seluruh Lagu berdasarkan title berhasil didapatkan',
+        data: {
+          songs: result,
+        },
+      };
+    }
+    if (performer) {
+      const songs = await this._service.getSongByPerformer(performer);
+      const result = songs.map((song) => ({
+        id: song.id,
+        title: song.title,
+        performer: song.performer,
+      }));
+      return {
+        status: 'success',
+        message: 'Seluruh Lagu berdasarkan performer berhasil didapatkan',
+        data: {
+          songs: result,
+        },
+      };
+    }
+
     const songs = await this._service.getSongs();
     return {
       status: 'success',
+      message: 'Seluruh Lagu berhasil didapatkan',
       data: {
         songs,
       },
@@ -47,6 +96,7 @@ class SongsHandler {
     const song = await this._service.getSongById(id);
     return {
       status: 'success',
+      message: 'Lagu berdasarkan id berhasil didapatkan',
       data: {
         song,
       },

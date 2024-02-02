@@ -10,25 +10,25 @@ class AlbumsService {
   }
 
   async addAlbum({ name, year }) {
-    const id = `album-${nanoid(16)}`;
+    const albumId = `album-${nanoid(16)}`;
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
-      values: [id, name, year],
+      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING album_id',
+      values: [albumId, name, year],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].id) {
+    if (!result.rows[0].album_id) {
       throw new InvariantError('Album gagal ditambahkan');
     }
 
-    return result.rows[0].id;
+    return result.rows[0].album_id;
   }
 
   async getAlbumById(id) {
     const query = {
-      text: 'SELECT albums.id, albums.name, albums.year, songs.id, songs.title, songs.performer FROM albums JOIN songs ON albums.id = songs.album_id WHERE albums.id = $1 GROUP BY albums.id, songs.id;',
+      text: 'SELECT albums.album_id, name, albums.year, song_id, songs.title, songs.performer FROM albums LEFT JOIN songs ON songs.album_id = albums.album_id WHERE albums.album_id = $1',
       values: [id],
     };
     const result = await this._pool.query(query);
@@ -37,12 +37,12 @@ class AlbumsService {
       throw new NotFoundError('Album tidak ditemukan');
     }
 
-    return result.rows[0];
+    return result;
   }
 
   async editAlbumById(id, { name, year }) {
     const query = {
-      text: 'UPDATE albums SET name = $1, year = $2 WHERE id = $3 RETURNING id',
+      text: 'UPDATE albums SET name = $1, year = $2 WHERE album_id = $3 RETURNING album_id',
       values: [name, year, id],
     };
 
@@ -55,7 +55,7 @@ class AlbumsService {
 
   async deleteAlbumById(id) {
     const query = {
-      text: 'DELETE FROM albums WHERE id = $1 RETURNING id',
+      text: 'DELETE FROM albums WHERE album_id = $1 RETURNING album_id',
       values: [id],
     };
 
