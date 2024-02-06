@@ -1,17 +1,29 @@
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
+
+// albums
 const albums = require('./api/albums');
-const songs = require('./api/songs');
 const AlbumsService = require('./services/AlbumsService');
-const SongsService = require('./services/SongsService');
 const AlbumsValidator = require('./validator/albums');
+
+// songs
+const songs = require('./api/songs');
+const SongsService = require('./services/SongsService');
 const SongsValidator = require('./validator/songs');
+
+// users
+const users = require('./api/users');
+const UsersService = require('./services/UsersService');
+const UsersValidator = require('./validator/users');
+
+// Error Handling
 const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
+  const usersService = new UsersService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -38,10 +50,16 @@ const init = async () => {
         validator: SongsValidator,
       },
     },
+    {
+      plugin: users,
+      options: {
+        service: usersService,
+        validator: UsersValidator,
+      },
+    },
   ]);
 
   server.ext('onPreResponse', (request, h) => {
-    // mendapatkan konteks response dari request
     const { response } = request;
 
     if (response instanceof Error) {

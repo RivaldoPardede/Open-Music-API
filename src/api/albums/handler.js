@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-underscore-dangle */
 const autoBind = require('auto-bind');
 
 class AlbumsHandler {

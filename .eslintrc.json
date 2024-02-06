@@ -11,6 +11,9 @@
         "ecmaVersion": "latest"
     },
     "rules": {
-        "no-console": "off"
+        "no-console": "off",
+        "camelcase": "off",
+        "arrow-parens":"off",
+        "no-underscore-dangle":"off"
     }
 }

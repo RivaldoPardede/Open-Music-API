@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 const songDBToModel = ({
   song_id,
   title,
