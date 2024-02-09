@@ -44,7 +44,7 @@ class SongsService {
       throw new NotFoundError('Lagu tidak ditemukan');
     }
 
-    return result.rows.map(songDBToModel)[0];
+    return songDBToModel(result.rows[0]);
   }
 
   async getSongByTitle(title) {
