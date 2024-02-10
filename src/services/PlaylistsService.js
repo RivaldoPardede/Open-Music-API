@@ -31,17 +31,12 @@ class PlaylistsService {
       text: `SELECT playlists.id, playlists.name, users.username 
       FROM playlists 
       LEFT JOIN users ON users.id = playlists.owner 
-      FULL JOIN collaborations ON playlists.id = collaborations.playlist_id
-      WHERE playlists.owner = $1 OR collaborations.user_id = $1`,
+      LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
+      WHERE collaborations.user_id = $1 OR users.id = $1`,
       values: [owner],
     };
 
     const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      throw new InvariantError('Daftar playlist gagal didapatkan ');
-    }
-
     return result.rows;
   }
 
@@ -138,6 +133,41 @@ class PlaylistsService {
     if (!result.rowCount) {
       throw new InvariantError('Playlist song gagal dihapus');
     }
+  }
+
+  async addActivities(playlistId, songId, userId, action) {
+    const id = `playlist-activities${nanoid(16)}`;
+    const time = new Date().toISOString();
+    const query = {
+      text: 'INSERT INTO playlist_activities VALUES($1, $2, $3, $4, $5, $6) RETURNING id',
+      values: [id, playlistId, songId, userId, action, time],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError('Gagal menambahkan aktivitas');
+    }
+
+    return result.rows[0].id;
+  }
+
+  async getPlaylistActivities(playlistId) {
+    const query = {
+      text: `SELECT users.username, songs.title,
+      playlist_activities.action,
+      playlist_activities.time
+      FROM playlist_activities
+      JOIN playlists ON playlist_activities.playlist_id = playlists.id
+      JOIN users ON playlists.owner = users.id
+      JOIN songs ON playlist_activities.song_id = songs.song_id
+      WHERE playlists.id = $1`,
+      values: [playlistId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows;
   }
 }
 
