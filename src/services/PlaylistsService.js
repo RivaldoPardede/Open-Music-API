@@ -40,6 +40,25 @@ class PlaylistsService {
     return result.rows;
   }
 
+  async getPlaylistById(playlistId) {
+    const query = {
+      text: `SELECT playlists.id, playlists.name, songs.song_id, songs.title, songs.performer 
+      FROM playlists JOIN users ON playlists.owner = users.id 
+      JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id 
+      JOIN songs ON playlist_songs.song_id = songs.song_id 
+      WHERE playlists.id = $1 `,
+      values: [playlistId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Playlist tidak ditemukan');
+    }
+
+    return result.rows;
+  }
+
   async deletePlaylistById(playlistId) {
     const query = {
       text: 'DELETE FROM playlists WHERE id = $1 RETURNING id',
