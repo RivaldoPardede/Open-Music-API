@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { Pool } = require('pg');
+const NotFoundError = require('../exceptions/NotFoundError');
 
 class StorageService {
   constructor(folder) {
@@ -25,13 +26,29 @@ class StorageService {
     });
   }
 
+  deleteFile(filename) {
+    const path = `${this._folder}/${filename}`;
+
+    if (!fs.existsSync(path)) return;
+
+    fs.unlink(path, (error) => {
+      if (error) throw error;
+    });
+  }
+
   async addAlbumCover(filename, albumId) {
     const query = {
-      text: 'UPDATE albums SET cover = $1 WHERE album_id = $2',
+      text: 'UPDATE albums SET cover = $1 WHERE album_id = $2 RETURNING album_id',
       values: [filename, albumId],
     };
 
-    await this._pool.query(query);
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Gagal memperbarui sampul. Id tidak ditemukan');
+    }
+
+    return result.rows;
   }
 }
 
