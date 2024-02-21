@@ -28,18 +28,13 @@ class StorageService {
 
   deleteFile(filename) {
     const path = `${this._folder}/${filename}`;
-
-    if (!fs.existsSync(path)) return;
-
-    fs.unlink(path, (error) => {
-      if (error) throw error;
-    });
+    return fs.promises.unlink(path);
   }
 
-  async addAlbumCover(filename, albumId) {
+  async addAlbumCover(coverUrl, albumId) {
     const query = {
-      text: 'UPDATE albums SET cover = $1 WHERE album_id = $2 RETURNING album_id',
-      values: [filename, albumId],
+      text: 'UPDATE albums SET cover = $1 WHERE album_id = $2 RETURNING album_id;',
+      values: [coverUrl, albumId],
     };
 
     const result = await this._pool.query(query);
