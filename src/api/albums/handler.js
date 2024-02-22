@@ -28,8 +28,6 @@ class AlbumsHandler {
   async getAlbumByIdHandler(request) {
     const { id } = request.params;
     const result = await this._service.getAlbumById(id);
-    // console.log(result.coverUrl);
-    // console.log(result.rows[0].cover);
     if (!result.rows[0].song_id) {
       const album = {
         id: result.rows[0].album_id,
@@ -83,6 +81,49 @@ class AlbumsHandler {
       status: 'success',
       message: 'Album berhasil dihapus',
     };
+  }
+
+  async postLikeAlbumHandler(request, h) {
+    const { id } = request.params;
+    const { id: credentialId } = request.auth.credentials;
+
+    await this._service.verifyLikedAlbum(credentialId, id);
+    await this._service.getAlbumById(id);
+    await this._service.addLike(credentialId, id);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Berhasil menyukai album',
+    });
+    response.code(201);
+    return response;
+  }
+
+  async deleteLikeAlbumHandler(request) {
+    const { id } = request.params;
+    const { id: credentialId } = request.auth.credentials;
+
+    await this._service.deleteLike(credentialId, id);
+
+    return {
+      status: 'success',
+      message: 'Batal menyukai album',
+    };
+  }
+
+  async getLikeAlbumHandler(request, h) {
+    const { id } = request.params;
+
+    const likes = await this._service.getLikes(id);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Album berhasil ditambahkan',
+      data: {
+        likes,
+      },
+    });
+    return response;
   }
 }
 
