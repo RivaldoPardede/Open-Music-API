@@ -26,11 +26,6 @@ class StorageService {
     });
   }
 
-  deleteFile(filename) {
-    const path = `${this._folder}/${filename}`;
-    return fs.promises.unlink(path);
-  }
-
   async addAlbumCover(coverUrl, albumId) {
     const query = {
       text: 'UPDATE albums SET cover = $1 WHERE album_id = $2 RETURNING album_id;',

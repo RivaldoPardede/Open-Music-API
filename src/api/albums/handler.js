@@ -28,9 +28,8 @@ class AlbumsHandler {
   async getAlbumByIdHandler(request) {
     const { id } = request.params;
     const result = await this._service.getAlbumById(id);
-
-    console.log(result.coverUrl);
-    console.log(result.rows[0].cover);
+    // console.log(result.coverUrl);
+    // console.log(result.rows[0].cover);
     if (!result.rows[0].song_id) {
       const album = {
         id: result.rows[0].album_id,
